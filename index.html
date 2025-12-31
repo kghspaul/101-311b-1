@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>114學年度 美式情境喜劇英語 期末考詳解 (語音加強版)</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6; /* Gray-100 */
+            padding-bottom: 80px;
+        }
+        .font-mono {
+            font-family: 'Roboto Mono', monospace;
+        }
+        .blank-underline {
+            display: inline-block;
+            border-bottom: 2px solid #3b82f6;
+            color: #1d4ed8;
+            font-weight: 600;
+            padding: 0 4px;
+            min-width: 40px;
+            text-align: center;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="sticky top-0 z-50 bg-white shadow-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="text-center md:text-left">
+                    <h1 class="text-xl font-bold text-gray-900 leading-tight">
+                        <i class="fa-solid fa-headphones text-purple-600 mr-2"></i>
+                        114學年 美式情境喜劇英語 期末考
+                    </h1>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
+                    <div class="relative">
+                        <input type="number" id="questionInput" placeholder="題號 (1-40)" 
+                            class="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                            min="1" max="40">
+                    </div>
+                    
+                    <button onclick="searchQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass mr-2"></i>查詢
+                    </button>
+                    
+                    <button onclick="renderGrid()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm">
+                        <i class="fa-solid fa-table-cells mr-2"></i>答案表
+                    </button>
+                    
+                    <button onclick="renderAllDetails()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm">
+                        <i class="fa-solid fa-list-check mr-2"></i>全詳解
+                    </button>
+                    
+                    <button onclick="clearScreen()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-lg transition-colors flex items-center shadow-sm border border-gray-300">
+                        <i class="fa-solid fa-eraser mr-2"></i>清除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="max-w-4xl mx-auto px-4 py-8 min-h-[60vh]">
+        <div id="welcome-message" class="text-center py-20 animate-fade-in">
+            <div class="text-6xl text-purple-200 mb-6"><i class="fa-solid fa-book-open-reader"></i></div>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">歡迎使用語音詳解系統</h2>
+            <p class="text-gray-500">點擊喇叭圖示 <i class="fa-solid fa-volume-high text-blue-500"></i> 可聆聽發音。</p>
+        </div>
+        
+        <div id="results-area" class="space-y-6 hidden"></div>
+    </main>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center text-sm text-gray-600">
+            <div class="flex items-center">
+                <i class="fa-regular fa-eye mr-2 text-blue-500"></i>
+                <span>本頁總瀏覽：</span>
+                <span id="busuanzi_container_page_pv" class="ml-1 font-mono font-bold text-gray-800">
+                    <span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                </span>
+            </div>
+            <div class="flex items-center">
+                <i class="fa-solid fa-computer-mouse mr-2 text-purple-500"></i>
+                <span>本次操作：</span>
+                <span id="session-counter" class="ml-1 font-mono font-bold text-gray-800">0</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Enhanced Data with KK, POS, Translation ---
+        // Format: ops: [{txt: "word", kk: "[...]", pos: "n.", ch: "中文"}, ...]
+        const rawData = [
+            {
+                id: 1, 
+                q: "____ the travel arrangements, we have decided to book the flights and hotels separately to save money.", 
+                a: "B", 
+                ops: [
+                    {txt: "As to", kk: "[æz tu]", pos: "phr.", ch: "至於；關於"},
+                    {txt: "As for", kk: "[æz fɔr]", pos: "phr.", ch: "至於（轉換話題）"},
+                    {txt: "As with", kk: "[æz wɪð]", pos: "phr.", ch: "正如；與...一樣"},
+                    {txt: "As of", kk: "[æz ʌv]", pos: "phr.", ch: "截至...；自...起"}
+                ],
+                t: "至於旅行的安排，我們決定分開預訂機票和飯店以節省金錢。", 
+                r: "As for (至於) 用於引入一個與前面話題相關的新話題。As to 也有關於的意思，但 As for 更常用於切換焦點。"
+            },
+            {
+                id: 2, 
+                q: "After running the marathon in the hot sun, the runners were completely ____ and needed water immediately.", 
+                a: "B", 
+                ops: [
+                    {txt: "disabled", kk: "[dɪsˋeb!d]", pos: "adj.", ch: "殘疾的；喪失能力的"},
+                    {txt: "exhausted", kk: "[ɪgˋzɔstɪd]", pos: "adj.", ch: "筋疲力盡的"},
+                    {txt: "ruined", kk: "[ˋruɪnd]", pos: "adj.", ch: "毀壞的；破產的"},
+                    {txt: "depressed", kk: "[dɪˋprɛst]", pos: "adj.", ch: "沮喪的；憂鬱的"}
+                ],
+                t: "在烈日下跑完馬拉松後，跑者們完全筋疲力盡，需要立即喝水。", 
+                r: "Exhausted (筋疲力盡的) 符合跑完馬拉松後的生理狀態。"
+            },
+            {
+                id: 3, 
+                q: "All the department ____ are required to attend the quarterly management meeting held in the main conference room.", 
+                a: "B", 
+                ops: [
+                    {txt: "counselors", kk: "[ˋkaʊns!ɚz]", pos: "n.", ch: "顧問；輔導員"},
+                    {txt: "supervisors", kk: "[ˋsupɚ͵vaɪzɚz]", pos: "n.", ch: "主管；監督者"},
+                    {txt: "negotiations", kk: "[nɪ͵goʃɪˋeʃənz]", pos: "n.", ch: "談判；協商"},
+                    {txt: "rejections", kk: "[rɪˋdʒɛkʃənz]", pos: "n.", ch: "拒絕；駁回"}
+                ],
+                t: "所有部門主管都被要求參加在主會議室舉行的季度管理會議。", 
+                r: "Supervisors (主管) 是管理階層，需要參加管理會議。"
+            },
+            {
+                id: 4, 
+                q: "Even though everyone disagreed with him, he decided to ____ and defend his personal beliefs.", 
+                a: "B", 
+                ops: [
+                    {txt: "get it straight", kk: "[gɛt ɪt stret]", pos: "phr.", ch: "把事情弄清楚"},
+                    {txt: "stand his ground", kk: "[stænd hɪz graʊnd]", pos: "phr.", ch: "堅守立場"},
+                    {txt: "trip over the rope", kk: "[trɪp ˋovɚ ðə rop]", pos: "phr.", ch: "被繩子絆倒"},
+                    {txt: "get beaten up", kk: "[gɛt ˋbitn ʌp]", pos: "phr.", ch: "被痛打一頓"}
+                ],
+                t: "即使大家都不同意他，他仍決定堅守立場並捍衛自己的個人信念。", 
+                r: "Stand his ground (堅守立場) 意指不退縮，符合捍衛信念的語境。"
+            },
+            {
+                id: 5, 
+                q: "He made a small ____ by investing in technology stocks when the market was booming last year.", 
+                a: "A", 
+                ops: [
+                    {txt: "fortune", kk: "[ˋfɔrtʃən]", pos: "n.", ch: "財富；運氣"},
+                    {txt: "persuasion", kk: "[pɚˋsweʒən]", pos: "n.", ch: "說服；信念"},
+                    {txt: "itinerary", kk: "[aɪˋtɪnə͵rɛrɪ]", pos: "n.", ch: "行程計畫"},
+                    {txt: "antique", kk: "[ænˋtik]", pos: "n.", ch: "古董"}
+                ],
+                t: "去年市場繁榮時，他通過投資科技股發了一筆小財。", 
+                r: "Make a fortune (發財) 是固定搭配。"
+            },
+            {
+                id: 6, 
+                q: "I am counting on you to finish this project on time, so please do not ____ this time.", 
+                a: "B", 
+                ops: [
+                    {txt: "back me up", kk: "[bæk mi ʌp]", pos: "phr.", ch: "支持我"},
+                    {txt: "let me down", kk: "[lɛt mi daʊn]", pos: "phr.", ch: "讓我失望"},
+                    {txt: "turn me down", kk: "[tɝn mi daʊn]", pos: "phr.", ch: "拒絕我"},
+                    {txt: "stand me up", kk: "[stænd mi ʌp]", pos: "phr.", ch: "放我鴿子"}
+                ],
+                t: "我指望你準時完成這個專案，所以這次請不要讓我失望。", 
+                r: "Let someone down (讓某人失望) 與 counting on (依靠) 語意相反。"
+            },
+            {
+                id: 7, 
+                q: "I have been trying to ____ customer service for hours, but the line is always busy.", 
+                a: "D", 
+                ops: [
+                    {txt: "agree on", kk: "[əˋgri ɑn]", pos: "phr.", ch: "對...達成協議"},
+                    {txt: "take a chance on", kk: "[tek ə tʃæns ɑn]", pos: "phr.", ch: "冒險嘗試"},
+                    {txt: "flock to", kk: "[flɑk tu]", pos: "phr.", ch: "蜂擁而至"},
+                    {txt: "get hold of", kk: "[gɛt hold ʌv]", pos: "phr.", ch: "聯絡上；找到"}
+                ],
+                t: "我已經試著聯絡客服好幾個小時了，但電話總是佔線。", 
+                r: "Get hold of (聯絡上) 常用於指通過電話聯繫某人。"
+            },
+            {
+                id: 8, 
+                q: "If you work hard and stay focused, you can ____ anything you set your mind to in life.", 
+                a: "A", 
+                ops: [
+                    {txt: "accomplish", kk: "[əˋkɑmplɪʃ]", pos: "v.", ch: "達成；完成"},
+                    {txt: "humiliate", kk: "[hjuˋmɪlɪ͵et]", pos: "v.", ch: "羞辱"},
+                    {txt: "abandon", kk: "[əˋbændən]", pos: "v.", ch: "放棄；遺棄"},
+                    {txt: "trigger", kk: "[ˋtrɪgɚ]", pos: "v.", ch: "觸發；引起"}
+                ],
+                t: "如果你努力工作並保持專注，你可以達成生活中你下定決心的任何事情。", 
+                r: "Accomplish (達成) 是正面詞彙，符合努力工作的結果。"
+            },
+            {
+                id: 9, 
+                q: "In case of an ____, please break the glass and press the red alarm button to call for help.", 
+                a: "B", 
+                ops: [
+                    {txt: "fraud", kk: "[frɔd]", pos: "n.", ch: "詐騙；騙局"},
+                    {txt: "emergency", kk: "[ɪˋmɝdʒənsɪ]", pos: "n.", ch: "緊急狀況"},
+                    {txt: "insanity", kk: "[ɪnˋsænətɪ]", pos: "n.", ch: "瘋狂；精神錯亂"},
+                    {txt: "sprain", kk: "[spren]", pos: "n.", ch: "扭傷"}
+                ],
+                t: "萬一發生緊急情況，請打破玻璃並按下紅色警報按鈕求救。", 
+                r: "Emergency (緊急狀況) 是需要按下警報求助的場合。"
+            },
+            {
+                id: 10, 
+                q: "It is absolutely ____ to suggest that we should cancel the event just because of a little rain.", 
+                a: "A", 
+                ops: [
+                    {txt: "ridiculous", kk: "[rɪˋdɪkjələs]", pos: "adj.", ch: "荒謬的；可笑的"},
+                    {txt: "likely", kk: "[ˋlaɪklɪ]", pos: "adj.", ch: "可能的"},
+                    {txt: "vulnerable", kk: "[ˋvʌlnərəb!]", pos: "adj.", ch: "易受傷的；脆弱的"},
+                    {txt: "inferior", kk: "[ɪnˋfɪrɪɚ]", pos: "adj.", ch: "低劣的；下級的"}
+                ],
+                t: "僅僅因為一點小雨就建議我們取消活動，這絕對是荒謬的。", 
+                r: "Ridiculous (荒謬的) 用於強烈反對因小事取消大事的建議。"
+            },
+            {
+                id: 11, 
+                q: "It is illegal to ____ animals, and anyone caught doing so will face severe penalties from the government.", 
+                a: "A", 
+                ops: [
+                    {txt: "abuse", kk: "[əˋbjuz]", pos: "v.", ch: "虐待；濫用"},
+                    {txt: "dread", kk: "[drɛd]", pos: "v.", ch: "懼怕；擔心"},
+                    {txt: "split", kk: "[splɪt]", pos: "v.", ch: "分裂；分開"},
+                    {txt: "slap", kk: "[slæp]", pos: "v.", ch: "拍擊；掌摑"}
+                ],
+                t: "虐待動物是違法的，任何被抓到的人都將面臨政府的嚴厲處罰。", 
+                r: "Abuse (虐待) 符合 illegal (違法) 和 penalties (處罰) 的語境。"
+            },
+            {
+                id: 12, 
+                q: "It is important to ____ the opinions of others, even if you strongly disagree with their point of view.", 
+                a: "B", 
+                ops: [
+                    {txt: "resolve", kk: "[rɪˋzɑlv]", pos: "v.", ch: "解決；決心"},
+                    {txt: "respect", kk: "[rɪˋspɛkt]", pos: "v.", ch: "尊重"},
+                    {txt: "update", kk: "[ʌpˋdet]", pos: "v.", ch: "更新"},
+                    {txt: "fasten", kk: "[ˋfæsn]", pos: "v.", ch: "繫緊；扣上"}
+                ],
+                t: "尊重他人的意見很重要，即使你強烈不同意他們的觀點。", 
+                r: "Respect (尊重) 是面對不同意見應有的態度。"
+            },
+            {
+                id: 13, 
+                q: "It suddenly ____ to me that I had left the front door unlocked when I left for work.", 
+                a: "B", 
+                ops: [
+                    {txt: "gross", kk: "[gros]", pos: "adj.", ch: "粗俗的；總的"},
+                    {txt: "occurred", kk: "[əˋkɝd]", pos: "v.", ch: "發生；被想到"},
+                    {txt: "appealed", kk: "[əˋpild]", pos: "v.", ch: "呼籲；吸引"},
+                    {txt: "alike", kk: "[əˋlaɪk]", pos: "adj.", ch: "相似的"}
+                ],
+                t: "我突然想到，我出門上班時沒鎖前門。", 
+                r: "It occurred to me that... (我突然想到...) 是固定句型。"
+            },
+            {
+                id: 14, 
+                q: "It took me a long time to understand the mathematical ____ of calculus, but now I find it interesting.", 
+                a: "B", 
+                ops: [
+                    {txt: "distraction", kk: "[dɪˋstrækʃən]", pos: "n.", ch: "分心；娛樂"},
+                    {txt: "concept", kk: "[ˋkɑnsɛpt]", pos: "n.", ch: "概念；觀念"},
+                    {txt: "bribery", kk: "[ˋbraɪbərɪ]", pos: "n.", ch: "賄賂"},
+                    {txt: "explosion", kk: "[ɪkˋsploʒən]", pos: "n.", ch: "爆炸；爆發"}
+                ],
+                t: "我花了很長時間才理解微積分的數學概念，但現在我覺得它很有趣。", 
+                r: "Concept (概念) 符合學習抽象學科的語境。"
+            },
+            {
+                id: 15, 
+                q: "It was very ____ of him to make jokes about her appearance right after she had a bad day.", 
+                a: "D", 
+                ops: [
+                    {txt: "supportive", kk: "[səˋpɔrtɪv]", pos: "adj.", ch: "支持的"},
+                    {txt: "sturdy", kk: "[ˋstɝdɪ]", pos: "adj.", ch: "堅固的；強健的"},
+                    {txt: "voluntary", kk: "[ˋvɑlən͵tɛrɪ]", pos: "adj.", ch: "自願的"},
+                    {txt: "insensitive", kk: "[ɪnˋsɛnsətɪv]", pos: "adj.", ch: "不體貼的；無感覺的"}
+                ],
+                t: "在她過得不順遂的一天後馬上開她外貌的玩笑，他真的很不體貼。", 
+                r: "Insensitive (不體貼) 描述不顧及他人感受的行為。"
+            },
+            {
+                id: 16, 
+                q: "Many people prefer natural ingredients because they are worried about the health effects of ____ sweeteners and colors.", 
+                a: "A", 
+                ops: [
+                    {txt: "artificial", kk: "[͵ɑrtəˋfɪʃəl]", pos: "adj.", ch: "人工的；人造的"},
+                    {txt: "superficial", kk: "[͵supɚˋfɪʃəl]", pos: "adj.", ch: "膚淺的；表面的"},
+                    {txt: "classic", kk: "[ˋklæsɪk]", pos: "adj.", ch: "經典的"},
+                    {txt: "gorgeous", kk: "[ˋgɔrdʒəs]", pos: "adj.", ch: "極好的；華麗的"}
+                ],
+                t: "許多人偏好天然成分，因為他們擔心人工甜味劑和色素對健康的影響。", 
+                r: "Artificial (人工的) 與 natural (天然的) 相對。"
+            },
+            {
+                id: 17, 
+                q: "My younger brother is severely ____ to peanuts, so we have to be very careful when buying snacks.", 
+                a: "A", 
+                ops: [
+                    {txt: "allergic", kk: "[əˋlɝdʒɪk]", pos: "adj.", ch: "過敏的"},
+                    {txt: "sensitive", kk: "[ˋsɛnsətɪv]", pos: "adj.", ch: "敏感的"},
+                    {txt: "modest", kk: "[ˋmɑdəst]", pos: "adj.", ch: "謙虛的；適度的"},
+                    {txt: "swollen", kk: "[ˋswolən]", pos: "adj.", ch: "腫脹的"}
+                ],
+                t: "我的弟弟對花生嚴重過敏，所以我們在買零食時必須非常小心。", 
+                r: "Allergic to (對...過敏) 是醫療上的固定用法。"
+            },
+            {
+                id: 18, 
+                q: "On a ____ Sunday morning, I usually wake up late, drink coffee, and read the newspaper in the garden.", 
+                a: "B", 
+                ops: [
+                    {txt: "liberal", kk: "[ˋlɪbərəl]", pos: "adj.", ch: "自由的；慷慨的"},
+                    {txt: "typical", kk: "[ˋtɪpɪk!]", pos: "adj.", ch: "典型的"},
+                    {txt: "conscious", kk: "[ˋkɑnʃəs]", pos: "adj.", ch: "有意識的"},
+                    {txt: "temporary", kk: "[ˋtɛmpə͵rɛrɪ]", pos: "adj.", ch: "暫時的"}
+                ],
+                t: "在一個典型的週日早晨，我通常會晚起，喝咖啡，並在花園裡看報紙。", 
+                r: "Typical (典型的) 用於描述慣例、常態的行為模式。"
+            },
+            {
+                id: 19, 
+                q: "Please do not park your car in front of the driveway because you will ____ the exit for other residents.", 
+                a: "D", 
+                ops: [
+                    {txt: "offend", kk: "[əˋfɛnd]", pos: "v.", ch: "冒犯"},
+                    {txt: "degrade", kk: "[dɪˋgred]", pos: "v.", ch: "降級；貶低"},
+                    {txt: "plead", kk: "[plid]", pos: "v.", ch: "懇求；辯護"},
+                    {txt: "block", kk: "[blɑk]", pos: "v.", ch: "阻擋；堵塞"}
+                ],
+                t: "請勿將車停在車道前，因為你會擋住其他住戶的出口。", 
+                r: "Block (阻擋) 符合停車擋道的語境。"
+            },
+            {
+                id: 20, 
+                q: "Pollution is a major environmental ____ that needs to be addressed by governments all around the world.", 
+                a: "C", 
+                ops: [
+                    {txt: "massage", kk: "[məˋsɑʒ]", pos: "n.", ch: "按摩"},
+                    {txt: "immigration", kk: "[͵ɪməˋgreʃən]", pos: "n.", ch: "移民"},
+                    {txt: "issue", kk: "[ˋɪʃju]", pos: "n.", ch: "議題；問題"},
+                    {txt: "obligation", kk: "[͵ɑbləˋgeʃən]", pos: "n.", ch: "義務；責任"}
+                ],
+                t: "污染是一個主要的環境議題，需要世界各國政府共同解決。", 
+                r: "Issue (議題) 常用於 environmental issue (環境議題)。"
+            },
+            {
+                id: 21, 
+                q: "Regular exercise and a balanced diet are extremely ____ for maintaining good physical and mental health.", 
+                a: "B", 
+                ops: [
+                    {txt: "technical", kk: "[ˋtɛknɪk!]", pos: "adj.", ch: "技術的"},
+                    {txt: "beneficial", kk: "[͵bɛnəˋfɪʃəl]", pos: "adj.", ch: "有益的；有利的"},
+                    {txt: "democratic", kk: "[͵dɛməˋkrætɪk]", pos: "adj.", ch: "民主的"},
+                    {txt: "specific", kk: "[spɪˋsɪfɪk]", pos: "adj.", ch: "特定的；具體的"}
+                ],
+                t: "規律運動和均衡飲食對於維持良好的身心健康極為有益。", 
+                r: "Beneficial (有益的) 描述對健康有正面影響的事物。"
+            },
+            {
+                id: 22, 
+                q: "The airport has tightened its ____ measures to ensure the safety of all passengers traveling during the holidays.", 
+                a: "C", 
+                ops: [
+                    {txt: "contact", kk: "[ˋkɑntækt]", pos: "n.", ch: "接觸；聯繫"},
+                    {txt: "restriction", kk: "[rɪˋstrɪkʃən]", pos: "n.", ch: "限制"},
+                    {txt: "security", kk: "[sɪˋkjʊrətɪ]", pos: "n.", ch: "安全；保全"},
+                    {txt: "statement", kk: "[ˋstetmənt]", pos: "n.", ch: "聲明；陳述"}
+                ],
+                t: "機場已加強其安全措施，以確保假期期間所有旅客的安全。", 
+                r: "Security measures (安全措施) 是機場常見的搭配詞。"
+            },
+            {
+                id: 23, 
+                q: "The artist used recycled materials to ____ a beautiful sculpture that was displayed in the city park.", 
+                a: "B", 
+                ops: [
+                    {txt: "propose", kk: "[prəˋpoz]", pos: "v.", ch: "提議；求婚"},
+                    {txt: "create", kk: "[kriˋet]", pos: "v.", ch: "創造；創作"},
+                    {txt: "manufacture", kk: "[͵mænjəˋfæktʃɚ]", pos: "v.", ch: "製造（工業）"},
+                    {txt: "innovate", kk: "[ˋɪnə͵vet]", pos: "v.", ch: "創新"}
+                ],
+                t: "這位藝術家使用回收材料創作了一座美麗的雕塑，展示在城市公園裡。", 
+                r: "Create (創作) 常用於藝術作品。"
+            },
+            {
+                id: 24, 
+                q: "The children were playing in the backyard, ____ to be pirates searching for buried treasure on a deserted island.", 
+                a: "D", 
+                ops: [
+                    {txt: "squeezing", kk: "[skwizɪŋ]", pos: "v.", ch: "擠壓"},
+                    {txt: "appreciating", kk: "[əˋpriʃɪ͵etɪŋ]", pos: "v.", ch: "欣賞；感激"},
+                    {txt: "abusing", kk: "[əˋbjuzɪŋ]", pos: "v.", ch: "濫用；虐待"},
+                    {txt: "pretending", kk: "[prɪˋtɛndɪŋ]", pos: "v.", ch: "假裝"}
+                ],
+                t: "孩子們在後院玩耍，假裝是海盜在荒島上尋找埋藏的寶藏。", 
+                r: "Pretending (假裝) 是兒童角色扮演遊戲的常用詞。"
+            },
+            {
+                id: 25, 
+                q: "The contractor gave us a rough ____ of the cost to renovate the kitchen, but the final price might be higher.", 
+                a: "D", 
+                ops: [
+                    {txt: "expenses", kk: "[ɪkˋspɛnsɪz]", pos: "n.", ch: "開支；費用"},
+                    {txt: "spirit", kk: "[ˋspɪrɪt]", pos: "n.", ch: "精神；靈魂"},
+                    {txt: "savings", kk: "[ˋsevɪŋz]", pos: "n.", ch: "存款"},
+                    {txt: "estimate", kk: "[ˋɛstəmɪt]", pos: "n.", ch: "估價；估計"}
+                ],
+                t: "承包商給了我們翻修廚房費用的粗略估算，但最終價格可能會更高。", 
+                r: "Rough estimate (粗略估算) 是商業報價常見用語。"
+            },
+            {
+                id: 26, 
+                q: "The doctor advised my father to ____ sugar and salty foods to improve his blood pressure.", 
+                a: "D", 
+                ops: [
+                    {txt: "put up with", kk: "[pʊt ʌp wɪð]", pos: "phr.", ch: "忍受"},
+                    {txt: "brush up on", kk: "[brʌʃ ʌp ɑn]", pos: "phr.", ch: "重溫；複習"},
+                    {txt: "make up for", kk: "[mek ʌp fɔr]", pos: "phr.", ch: "補償"},
+                    {txt: "cut down on", kk: "[kʌt daʊn ɑn]", pos: "phr.", ch: "減少；削減"}
+                ],
+                t: "醫生建議我父親減少糖分和鹹食的攝取，以改善血壓。", 
+                r: "Cut down on (減少) 用於減少攝取量。"
+            },
+            {
+                id: 27, 
+                q: "The doctor said that her constant fatigue was caused by a severe iron ____ in her diet.", 
+                a: "B", 
+                ops: [
+                    {txt: "resume", kk: "[rɪˋzjum]", pos: "n.", ch: "履歷 (v. 恢復)"},
+                    {txt: "deficiency", kk: "[dɪˋfɪʃənsɪ]", pos: "n.", ch: "缺乏；不足"},
+                    {txt: "plumbing", kk: "[ˋplʌmɪŋ]", pos: "n.", ch: "水管工程"},
+                    {txt: "offense", kk: "[əˋfɛns]", pos: "n.", ch: "冒犯；進攻"}
+                ],
+                t: "醫生說她持續的疲勞是由於飲食中嚴重的鐵質缺乏所致。", 
+                r: "Iron deficiency (缺鐵) 是醫學術語。"
+            },
+            {
+                id: 28, 
+                q: "The history teacher gave us a difficult ____ that requires us to research the causes of World War II.", 
+                a: "B", 
+                ops: [
+                    {txt: "assumption", kk: "[əˋsʌmpʃən]", pos: "n.", ch: "假設"},
+                    {txt: "assignment", kk: "[əˋsaɪnmənt]", pos: "n.", ch: "作業；任務"},
+                    {txt: "property", kk: "[ˋprɑpɚtɪ]", pos: "n.", ch: "財產；房地產"},
+                    {txt: "agency", kk: "[ˋedʒənsɪ]", pos: "n.", ch: "代辦處；機構"}
+                ],
+                t: "歷史老師給了我們一項困難的作業，要求我們研究第二次世界大戰的起因。", 
+                r: "Assignment (作業) 是學校情境用語。"
+            },
+            {
+                id: 29, 
+                q: "The instructions for assembling the new furniture were so ____ that we had to hire a professional to help.", 
+                a: "C", 
+                ops: [
+                    {txt: "missed out", kk: "[mɪst aʊt]", pos: "phr.", ch: "錯過"},
+                    {txt: "supportive", kk: "[səˋpɔrtɪv]", pos: "adj.", ch: "支持的"},
+                    {txt: "complicated", kk: "[ˋkɑmplə͵ketɪd]", pos: "adj.", ch: "複雜的"},
+                    {txt: "stuck", kk: "[stʌk]", pos: "adj.", ch: "卡住的；困住的"}
+                ],
+                t: "組裝新家具的說明書太複雜了，我們不得不僱請專業人士來幫忙。", 
+                r: "Complicated (複雜的) 導致需要專業協助。"
+            },
+            {
+                id: 30, 
+                q: "The lawyer did his best to ____ the accused man against the serious charges brought by the state prosecutor.", 
+                a: "B", 
+                ops: [
+                    {txt: "resent", kk: "[rɪˋzɛnt]", pos: "v.", ch: "憤恨；不滿"},
+                    {txt: "defend", kk: "[dɪˋfɛnd]", pos: "v.", ch: "辯護；防衛"},
+                    {txt: "explode", kk: "[ɪkˋsplod]", pos: "v.", ch: "爆炸"},
+                    {txt: "threaten", kk: "[ˋθrɛtn]", pos: "v.", ch: "威脅"}
+                ],
+                t: "律師盡全力為被告辯護，對抗州檢察官提出的嚴重指控。", 
+                r: "Defend (辯護) 是律師的職責。"
+            },
+            {
+                id: 31, 
+                q: "The main ____ of this meeting is to discuss the marketing strategy for the new product launch next year.", 
+                a: "B", 
+                ops: [
+                    {txt: "client", kk: "[ˋklaɪənt]", pos: "n.", ch: "客戶"},
+                    {txt: "purpose", kk: "[ˋpɝpəs]", pos: "n.", ch: "目的"},
+                    {txt: "proverb", kk: "[ˋprɑvɝb]", pos: "n.", ch: "諺語"},
+                    {txt: "cramp", kk: "[kræmp]", pos: "n.", ch: "抽筋；夾鉗"}
+                ],
+                t: "這次會議的主要目的是討論明年新產品發布的行銷策略。", 
+                r: "Purpose (目的) 是會議的核心主題。"
+            },
+            {
+                id: 32, 
+                q: "The mother lion fought bravely to ____ her cubs from the approaching hyenas during the dangerous night.", 
+                a: "C", 
+                ops: [
+                    {txt: "slash", kk: "[slæʃ]", pos: "v.", ch: "揮砍；削減"},
+                    {txt: "betray", kk: "[bɪˋtre]", pos: "v.", ch: "背叛"},
+                    {txt: "shield", kk: "[ʃild]", pos: "v.", ch: "保護；庇護"},
+                    {txt: "appall", kk: "[əˋpɔl]", pos: "v.", ch: "使驚駭"}
+                ],
+                t: "在危險的夜晚，母獅勇敢地戰鬥，以保護幼獅免受逼近的鬣狗傷害。", 
+                r: "Shield (保護) 意指像盾牌一樣擋在危險前面。"
+            },
+            {
+                id: 33, 
+                q: "The old machine has not been ____ for many years and needs significant repairs before it can run again.", 
+                a: "A", 
+                ops: [
+                    {txt: "operated", kk: "[ˋɑpə͵retɪd]", pos: "v.", ch: "操作；運作"},
+                    {txt: "subconscious", kk: "[sʌbˋkɑnʃəs]", pos: "adj.", ch: "潛意識的"},
+                    {txt: "inadequate", kk: "[ɪnˋædəkwɪt]", pos: "adj.", ch: "不充分的"},
+                    {txt: "reduced", kk: "[rɪˋdjust]", pos: "adj.", ch: "減少的"}
+                ],
+                t: "這台舊機器已經很多年沒有操作了，在重新運作前需要重大維修。", 
+                r: "Operated (操作) 符合機器運轉的語境。"
+            },
+            {
+                id: 34, 
+                q: "The powerful hurricane threatened to ____ all the houses along the coast if the residents did not evacuate.", 
+                a: "A", 
+                ops: [
+                    {txt: "destroy", kk: "[dɪˋstrɔɪ]", pos: "v.", ch: "摧毀"},
+                    {txt: "screen", kk: "[skrin]", pos: "v.", ch: "篩選；遮蔽"},
+                    {txt: "scream", kk: "[skrim]", pos: "v.", ch: "尖叫"},
+                    {txt: "comfort", kk: "[ˋkʌmfɚt]", pos: "v.", ch: "安慰"}
+                ],
+                t: "強大的颶風威脅著如果居民不撤離，將摧毀沿海的所有房屋。", 
+                r: "Destroy (摧毀) 是天災常見的破壞性後果。"
+            },
+            {
+                id: 35, 
+                q: "The puppy was found ____ on the side of the road, but luckily a kind family adopted it.", 
+                a: "D", 
+                ops: [
+                    {txt: "survived", kk: "[sɚˋvaɪvd]", pos: "v.", ch: "倖存"},
+                    {txt: "humiliated", kk: "[hjuˋmɪlɪ͵etɪd]", pos: "v.", ch: "受羞辱的"},
+                    {txt: "accomplished", kk: "[əˋkɑmplɪʃt]", pos: "adj.", ch: "有造詣的；完成的"},
+                    {txt: "abandoned", kk: "[əˋbændənd]", pos: "adj.", ch: "被遺棄的"}
+                ],
+                t: "這隻小狗被發現遭遺棄在路邊，但幸運的是一個好心家庭收養了它。", 
+                r: "Abandoned (被遺棄的) 解釋了為何小狗會在路邊且需要被領養。"
+            },
+            {
+                id: 36, 
+                q: "The students were very ____ about the upcoming field trip to the science museum and couldn't stop talking about it.", 
+                a: "C", 
+                ops: [
+                    {txt: "possessive", kk: "[pəˋzɛsɪv]", pos: "adj.", ch: "佔有慾強的"},
+                    {txt: "tolerant", kk: "[ˋtɑlərənt]", pos: "adj.", ch: "寬容的"},
+                    {txt: "enthusiastic", kk: "[ɪn͵θjuzɪˋæstɪk]", pos: "adj.", ch: "熱情的；興奮的"},
+                    {txt: "unjustified", kk: "[ʌnˋdʒʌstə͵faɪd]", pos: "adj.", ch: "不正當的"}
+                ],
+                t: "學生們對即將到來的科學博物館校外教學感到非常興奮，不停地談論著。", 
+                r: "Enthusiastic (熱情的) 表現為不停談論某事。"
+            },
+            {
+                id: 37, 
+                q: "The teacher was very ____ about the student's excuse for not finishing the homework on time again.", 
+                a: "C", 
+                ops: [
+                    {txt: "judgmental", kk: "[dʒʌdʒˋmɛnt!]", pos: "adj.", ch: "愛批評的"},
+                    {txt: "pathetic", kk: "[pəˋθɛtɪk]", pos: "adj.", ch: "可悲的"},
+                    {txt: "doubtful", kk: "[ˋdaʊtfəl]", pos: "adj.", ch: "懷疑的"},
+                    {txt: "miraculous", kk: "[mɪˋrækjələs]", pos: "adj.", ch: "奇蹟般的"}
+                ],
+                t: "老師對學生再次未準時完成作業的藉口感到非常懷疑。", 
+                r: "Doubtful (懷疑的) 合理反應，特別是當學生「再次」找藉口時。"
+            },
+            {
+                id: 38, 
+                q: "The view from the top of the mountain was absolutely ____, allowing us to see the entire city below.", 
+                a: "A", 
+                ops: [
+                    {txt: "incredible", kk: "[ɪnˋkrɛdəb!]", pos: "adj.", ch: "難以置信的；極好的"},
+                    {txt: "unbearable", kk: "[ʌnˋbɛrəb!]", pos: "adj.", ch: "無法忍受的"},
+                    {txt: "indispensable", kk: "[͵ɪndɪsˋpɛnsəb!]", pos: "adj.", ch: "不可或缺的"},
+                    {txt: "unacceptable", kk: "[͵ʌnəkˋsɛptəb!]", pos: "adj.", ch: "無法接受的"}
+                ],
+                t: "從山頂看下去的景色絕對令人難以置信，讓我們能看到下方的整個城市。", 
+                r: "Incredible (極好的) 常用於形容美景。"
+            },
+            {
+                id: 39, 
+                q: "There is a high ____ for skilled engineers in the technology industry due to the rapid growth of AI.", 
+                a: "D", 
+                ops: [
+                    {txt: "suicide", kk: "[ˋsuə͵saɪd]", pos: "n.", ch: "自殺"},
+                    {txt: "pact", kk: "[pækt]", pos: "n.", ch: "契約；條約"},
+                    {txt: "enthusiasm", kk: "[ɪnˋθjuzɪ͵æzəm]", pos: "n.", ch: "熱情"},
+                    {txt: "demand", kk: "[dɪˋmænd]", pos: "n.", ch: "需求；要求"}
+                ],
+                t: "由於人工智慧的快速成長，科技業對熟練工程師有很高的需求。", 
+                r: "High demand (高需求) 符合產業缺工的語境。"
+            },
+            {
+                id: 40, 
+                q: "We bought a bottle of expensive champagne to celebrate the special ____ of our parents' fiftieth wedding anniversary.", 
+                a: "C", 
+                ops: [
+                    {txt: "mock", kk: "[mɑk]", pos: "n.", ch: "嘲弄"},
+                    {txt: "phenomenon", kk: "[fəˋnɑmə͵nɑn]", pos: "n.", ch: "現象"},
+                    {txt: "occasion", kk: "[əˋkeʒən]", pos: "n.", ch: "場合；時機"},
+                    {txt: "command", kk: "[kəˋmænd]", pos: "n.", ch: "命令；指揮"}
+                ],
+                t: "我們買了一瓶昂貴的香檳來慶祝父母金婚紀念日這個特殊場合。", 
+                r: "Special occasion (特殊場合) 是慶祝活動的標準用語。"
+            }
+        ];
+
+        let sessionOps = 0;
+
+        // --- Core Functions ---
+
+        function updateSession() {
+            sessionOps++;
+            document.getElementById('session-counter').innerText = sessionOps;
+        }
+
+        function highlightBlank(text, id) {
+            return text.replace(/_+/g, `<span class="blank-underline">&nbsp;${id}&nbsp;</span>`);
+        }
+
+        // --- Text to Speech Function ---
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                // Cancel previous speech to prevent overlapping
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; // Set to American English
+                utterance.rate = 0.9; // Slightly slower for clarity
+                utterance.pitch = 1;
+                
+                // Try to find a better English voice
+                const voices = window.speechSynthesis.getVoices();
+                const enVoice = voices.find(voice => voice.lang === 'en-US' && voice.name.includes('Google')) || voices.find(voice => voice.lang.includes('en'));
+                if (enVoice) utterance.voice = enVoice;
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("您的瀏覽器不支援語音功能。");
+            }
+        }
+
+        function createCard(item, showDetails = true) {
+            const processedQuestion = highlightBlank(item.q, item.id);
+            
+            // Map over the new object structure for options
+            const optionsHtml = item.ops.map((op, idx) => {
+                const labels = ['A', 'B', 'C', 'D'];
+                const currentLabel = labels[idx];
+                const isCorrect = currentLabel === item.a;
+                
+                // Container Styling
+                let containerClass = "border rounded-lg overflow-hidden flex flex-col transition-all ";
+                let headerClass = "flex justify-between items-center p-3 ";
+                let footerClass = "bg-gray-50 px-3 py-2 text-xs border-t border-gray-100 text-gray-500 font-mono";
+                
+                if (showDetails) {
+                    if (isCorrect) {
+                        containerClass += "bg-green-50 border-green-400 ring-1 ring-green-400";
+                        headerClass += "text-gray-900 font-bold";
+                        footerClass += " bg-green-100/50 text-green-800";
+                    } else {
+                        containerClass += "bg-white border-gray-200 opacity-90";
+                        headerClass += "text-gray-700";
+                    }
+                } else {
+                    containerClass += "bg-white border-gray-200 hover:border-purple-300";
+                    footerClass += " hidden"; // Hide metadata in compact mode if needed (optional)
+                }
+
+                // Speaker Button ID
+                const btnId = `speak-${item.id}-${idx}`;
+
+                return `
+                    <div class="${containerClass} group">
+                        <div class="${headerClass}">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 flex items-center justify-center rounded-full ${showDetails && isCorrect ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'} text-xs font-bold shrink-0">
+                                    ${currentLabel}
+                                </span>
+                                <span class="text-base">${op.txt}</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); speak('${op.txt.replace(/'/g, "\\'")}')" 
+                                class="text-gray-400 hover:text-purple-600 hover:scale-110 transition-all w-8 h-8 flex items-center justify-center rounded-full hover:bg-purple-50"
+                                title="朗讀">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+                        
+                        ${showDetails ? `
+                        <div class="${footerClass}">
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <span class="text-purple-700 font-medium">${op.kk}</span>
+                                <span class="italic text-gray-500">${op.pos}</span>
+                                <span class="text-gray-700">${op.ch}</span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-slide-up hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-start">
+                        <div class="flex items-start gap-3 w-full">
+                            <span class="bg-blue-600 text-white text-sm font-bold px-2.5 py-1 rounded mt-1 shrink-0">Q${item.id}</span>
+                            <div class="text-lg text-gray-800 leading-relaxed font-medium w-full">
+                                ${processedQuestion}
+                                <button onclick="speak('${item.q.replace(/'/g, "\\'").replace(/_+/g, "blank")}')" class="inline-block ml-2 text-blue-300 hover:text-blue-600 transition-colors text-sm" title="朗讀整句">
+                                    <i class="fa-solid fa-circle-play"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${optionsHtml}
+                    </div>
+
+                    ${showDetails ? `
+                        <div class="px-6 py-4 bg-purple-50/30 border-t border-purple-100">
+                            <div class="mb-3">
+                                <h4 class="text-xs font-bold text-purple-500 uppercase tracking-wide mb-1">
+                                    <i class="fa-solid fa-language mr-1"></i> 中文翻譯
+                                </h4>
+                                <p class="text-gray-700 text-sm leading-relaxed bg-white p-2 rounded border border-purple-100 shadow-sm">${item.t}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-amber-600 uppercase tracking-wide mb-1">
+                                    <i class="fa-solid fa-lightbulb mr-1"></i> 解析理由
+                                </h4>
+                                <p class="text-gray-700 text-sm leading-relaxed">${item.r}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // --- Interaction Handlers ---
+
+        function searchQuestion() {
+            updateSession();
+            const input = document.getElementById('questionInput');
+            const qId = parseInt(input.value);
+            const container = document.getElementById('results-area');
+            const welcome = document.getElementById('welcome-message');
+
+            if (!qId || qId < 1 || qId > 40) {
+                alert("請輸入有效的題號 (1-40)");
+                return;
+            }
+
+            welcome.classList.add('hidden');
+            container.classList.remove('hidden');
+            
+            const item = rawData.find(d => d.id === qId);
+            container.innerHTML = createCard(item, true);
+        }
+
+        function renderGrid() {
+            updateSession();
+            const container = document.getElementById('results-area');
+            const welcome = document.getElementById('welcome-message');
+            
+            welcome.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            let gridHtml = `
+                <div class="bg-white rounded-xl shadow p-6 border border-gray-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2 flex items-center">
+                        <i class="fa-solid fa-check-double text-green-600 mr-2"></i> 快速對答表
+                    </h3>
+                    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+            `;
+
+            rawData.forEach(item => {
+                gridHtml += `
+                    <div class="flex flex-col items-center p-2 rounded hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-colors cursor-pointer" onclick="document.getElementById('questionInput').value=${item.id}; searchQuestion();">
+                        <span class="text-xs text-gray-400 mb-1">${item.id}</span>
+                        <span class="font-bold text-lg text-blue-600">${item.a}</span>
+                    </div>
+                `;
+            });
+
+            gridHtml += `</div></div>`;
+            container.innerHTML = gridHtml;
+        }
+
+        function renderAllDetails() {
+            updateSession();
+            const container = document.getElementById('results-area');
+            const welcome = document.getElementById('welcome-message');
+            
+            welcome.classList.add('hidden');
+            container.classList.remove('hidden');
+
+            container.innerHTML = rawData.map(item => createCard(item, true)).join('');
+        }
+
+        function clearScreen() {
+            updateSession();
+            document.getElementById('questionInput').value = '';
+            document.getElementById('results-area').classList.add('hidden');
+            document.getElementById('results-area').innerHTML = '';
+            document.getElementById('welcome-message').classList.remove('hidden');
+            window.speechSynthesis.cancel();
+        }
+
+        // Enter key support
+        document.getElementById('questionInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchQuestion();
+            }
+        });
+
+        // Initialize Voices (Browser quirk workarounds)
+        window.speechSynthesis.onvoiceschanged = function() {
+            // Trigger voice load
+            window.speechSynthesis.getVoices();
+        };
+
+    </script>
+</body>
+</html>
